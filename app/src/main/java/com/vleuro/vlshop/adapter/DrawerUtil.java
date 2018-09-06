@@ -11,8 +11,10 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.vleuro.vlshop.BarcodeCaptureActivity;
 import com.vleuro.vlshop.R;
-import com.vleuro.vlshop.activity.MainActivity;
+import com.vleuro.vlshop.MainActivity;
+
 
 
 public class DrawerUtil {
@@ -62,10 +64,20 @@ public class DrawerUtil {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem.getIdentifier() == 2 && !(activity instanceof MainActivity)) {
+                        if (drawerItem.getIdentifier() == 1 && !(activity instanceof MainActivity)) {
                             // load tournament screen
                             Intent intent = new Intent(activity, MainActivity.class);
                             view.getContext().startActivity(intent);
+                        }
+                        if (drawerItem.getIdentifier() == 2 ) {
+                            //&& !(activity instanceof MainActivity)
+                            // load tournament screen
+                            Intent intent = new Intent(activity, BarcodeCaptureActivity.class);
+                            //Intent intent = new Intent(this, BarcodeCaptureActivity.class);
+                            intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+                            intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+                            view.getContext().startActivity(intent);
+
                         }
                         return true;
                     }

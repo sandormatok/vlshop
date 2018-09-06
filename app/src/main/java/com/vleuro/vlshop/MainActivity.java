@@ -1,4 +1,4 @@
-package com.vleuro.vlshop.activity;
+package com.vleuro.vlshop;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
+    private static final int RC_BARCODE_CAPTURE = 9001;
 
     @BindView(R.id.toolbar)
     public Toolbar toolBar;
@@ -90,10 +91,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         );
     }
 
+
+
     /**
      * Fetches mail messages by making HTTP request
      * url: http://api.androidhive.info/json/inbox.json
      */
+//san suriel 09 TODO: Kell egy saját JSON request a letárolt eredményekre...
+//TODO: Letárolt eredmények...!!! :)
     private void getInbox() {
         swipeRefreshLayout.setRefreshing(true);
 

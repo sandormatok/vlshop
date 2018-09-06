@@ -9,4 +9,41 @@
 <string name="nav_header_title">Android Studio</string>
 <string name="nav_header_subtitle">android.studio@android.com</string>
 <string name="nav_header_desc">Navigation header</string>
+
+    <item name="visible" type="id" />
+    <item name="masked" type="id" />
+
+    <string name="ok">OK</string>
+    <string name="permission_camera_rationale">A kamera nem elérhető!</string>
+    <string name="no_camera_permission">Ez az app nem tud elindulni ezen a készüléken. Kamera jogosultságra van szükség!</string>
+    <string name="low_storage_error">A vonalkód felismerő nem tölthető le, mert kevés a hely!</string>
+    <string name="title_activity_main">VL-SCAN Raktár</string>
+    <string name="barcode_header"></string>
+    <string name="read_barcode">BEOLVASÁS</string>
+    <string name="enter_barcode">BEÍRÁS</string>
+    <string name="auto_focus">Autófókusz</string>
+    <string name="use_flash">Vaku</string>
+    <string name="remote_DB">Távoli adatbázis</string>
+    <string name="barcode_success">Vonalkód beolvasva!</string>
+    <string name="barcode_failure">Nincs vonalkód!</string>
+    <string name="barcode_error">"Hiba a vonalkód olvasása közben: %1$s"</string>
+    <string name="results_marka">\nMárka:\t</string>
+    <string name="results_termek">\nTermék:\t</string>
+    <string name="results_ar">\nKészlet:\t</string>
+    <string name="boltok_prompt">Válassz boltot!</string>
+    <string name="spinner_prompt">Válassz ki egy üzletet!</string>
+    <string name="multiprocessor">Gyors mód</string>
+    <string name="title_activity_login">VL-Scan Raktár</string>
+    <string name="action_online">Online bejelentkezés</string>
+    <string name="termeknevEditTextString">Terméknév</string>
+    <string name="mennyisegEditTextString">#</string>
+    <string name="torlesImageButtonString">Törlés</string>
+    <string name="enter_mennyiseg">MENNYISÉG JAVÍTÁSA...</string>
+    <string name="hello">Hello World, MyCustomListView!</string>
+
+
+    <string name="field_login_vevokod">Vevőkód</string>
+    <string name="field_login_vevojelszo">Jelszó</string>
+    <string name="title_activity_barcode_reader2">BarcodeReader2</string>
+
 </resources>
