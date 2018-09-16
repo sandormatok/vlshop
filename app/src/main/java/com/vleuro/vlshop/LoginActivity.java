@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         //TOOLBAR
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("VL-Shop 1.0alpha");
+        getSupportActionBar().setTitle("VL-SCAN Raktár");
 
         //UI ELEMEK
         loginInputVevokod = findViewById(R.id.input_vevokod);
@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         String prefsVevokod = prefs.getString("vevokod", "");
         String prefsVevojelszo = prefs.getString("vevojelszo", "");
         String prefsVevonev = prefs.getString("vevonev", "");
+        onlinemode = prefs.getBoolean("onlinemode", false);
 
 
         vevonevLogin.setText(prefsVevonev);
@@ -105,11 +106,8 @@ public class LoginActivity extends AppCompatActivity {
         //WIFI KONFIGURÁCIÓ
 //san suriel
         wifissid = "VLEURO";
-
         wifipass = "\"vleurokft\"";
-
         final WifiConfiguration wifiConfig = new WifiConfiguration();
-
 //san suriel
         wifiConfig.SSID = String.format("\"%s\"", wifissid);
         wifiConfig.preSharedKey = String.format("\"%s\"", wifipass);
@@ -128,35 +126,36 @@ public class LoginActivity extends AppCompatActivity {
 //WIFI ELLENŐRZÉS
 // san.suriel       if(!globalSsid.equals(wifissid);
         if (!globalSsid.equals("\"VLEURO\"")) {
-                allowLogin = true;
-                View view = View.inflate(this, R.layout.alert_dialog_net, null);
+            //san suriel security override??
+            allowLogin = true;
+            View view = View.inflate(this, R.layout.alert_dialog_net, null);
 
-                //CSATLAKOZÁS A VLEURO WIFI-HEZ
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Csatlakozhatok a VL-Euro Kft. hálózatára?");
-                final WifiManager wifiManager3 = (WifiManager) getSystemService(WIFI_SERVICE);
-                alert.setPositiveButton("Kilépés", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        finish();
-                        System.exit(0);
-                    }
-                });
-                alert.setNegativeButton("Csatlakozás",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                wifiManager3.setWifiEnabled(true);
+            //CSATLAKOZÁS A VLEURO WIFI-HEZ
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Csatlakozhatok a VL-Euro Kft. hálózatára?");
+            final WifiManager wifiManager3 = (WifiManager) getSystemService(WIFI_SERVICE);
+            alert.setPositiveButton("Kilépés", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    finish();
+                    System.exit(0);
+                }
+            });
+            alert.setNegativeButton("Csatlakozás",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            wifiManager3.setWifiEnabled(true);
 
-                                int netId = wifiManager3.addNetwork(wifiConfig);
-                                wifiManager3.disconnect();
-                                wifiManager3.enableNetwork(netId, true);
-                                wifiManager3.reconnect();
-                                allowLogin = true;
-                            }
-                        });
+                            int netId = wifiManager3.addNetwork(wifiConfig);
+                            wifiManager3.disconnect();
+                            wifiManager3.enableNetwork(netId, true);
+                            wifiManager3.reconnect();
+                            allowLogin = true;
+                        }
+                    });
             String globalSsidCHK = wifiInfo.getSSID();
-            Toast toast = Toast.makeText(getApplicationContext(),globalSsidCHK , Toast.LENGTH_LONG);
-                alert.show();
-            }
+            //Toast toast = Toast.makeText(getApplicationContext(),globalSsidCHK , Toast.LENGTH_LONG);
+            alert.show();
+        }
 
         //BEJELENTKEZÉS GOMB
         btnlogin.setOnClickListener(new View.OnClickListener() {
@@ -166,7 +165,10 @@ public class LoginActivity extends AppCompatActivity {
                     loginUser(loginInputVevokod.getText().toString(),
                             loginInputPassword.getText().toString());
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Nincs kapcsolat a kiszolgálóval!" , Toast.LENGTH_LONG);
+
+                    Snackbar.make(findViewById(R.id.logincoordinatorLayout), "Nincs kapcsolat a kiszolgálóval!",
+                            Snackbar.LENGTH_LONG)
+                            .show();
                 }
             }
         });
@@ -200,7 +202,7 @@ public class LoginActivity extends AppCompatActivity {
                     String qrcodeString1 = "qrcode";
                     String qrcodeString2 = separated[0];
 
-                //    if (qrcode == "qrcode") {
+                    //    if (qrcode == "qrcode") {
 
                     if (qrcodeString2.equals("qrcode")) {
                         globalVevokod = separated[1];
@@ -212,13 +214,14 @@ public class LoginActivity extends AppCompatActivity {
 
                         loginInputVevokod.setText(globalVevokod, TextView.BufferType.EDITABLE);
                         loginInputPassword.setText(globalPassword, TextView.BufferType.EDITABLE);
+
                     } else {
 
+                        Snackbar.make(findViewById(R.id.logincoordinatorLayout), "Hibás QR KÓD!",
+                                Snackbar.LENGTH_LONG)
+                                .show();
 
-                        Toast toast = Toast.makeText(getApplicationContext(), "Hibás QR KÓD! ," + qrcodeString1 + ", " + qrcodeString2, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.BOTTOM, 0, 20);
-                        toast.show();
-                    }
+                        }
 
                     Log.d(TAG, "Vonalkód (LoginAvtivity) " + barcode3);
                 } else {
@@ -254,11 +257,20 @@ public class LoginActivity extends AppCompatActivity {
         String id = "5997076721852";
         String url = "";
 
+        Snackbar.make(findViewById(R.id.logincoordinatorLayout), globalVevokod,
+                Snackbar.LENGTH_SHORT)
+                .show();
+
+
+
         //Admin user-ek az online adatbázishoz kapcsolódnak...
-       if(adminokList.contains(globalVevokod)){
+        if(adminokList.contains(globalVevokod) && onlinemode) {
             url = DATA_RAKTAR_KESZLET_URL_ONLINE + id + "&vkod=" + globalVevokod;
         } else {
-            url = DATA_RAKTAR_KESZLET_URL + id + "&vkod=" + globalVevokod;
+            url = DATA_RAKTAR_KESZLET_URL_ONLINE + id + "&vkod=" + globalVevokod;
+
+//san suriel LOCAL LOGIN OWERRIDE!!! -------------------------------------------
+            //url = DATA_RAKTAR_KESZLET_URL + id + "&vkod=" + globalVevokod;
         }
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
@@ -273,7 +285,10 @@ public class LoginActivity extends AppCompatActivity {
                     //Todo: meg kell nezni, hogy van-e error message mielott tostringet hivsz ra....
                     public void onErrorResponse(VolleyError error) {
 //san suriel                        Toast.makeText(LoginActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(LoginActivity.this, "Nem sikerült kapcsolódni!", Toast.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.logincoordinatorLayout), "Nem sikerült kapcsolódni!",
+                                Snackbar.LENGTH_LONG)
+                                .show();
+
                     }
                 });
 
@@ -310,6 +325,9 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        Toast toast = Toast.makeText(getApplicationContext(),jujel + " = " + globalVevokod , Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER,0,20); toast.show();
+
         if (globalPassword.equals(jujel)){
             //SAVE TO SHARED PREFERENCES
             if (maradjonbeBox.isChecked()) {
@@ -317,6 +335,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("vevokod", globalVevokod);
                 editor.putString("vevonev", globalVevonev);
                 editor.putString("vevojelszo", globalPassword);
+                editor.putBoolean("onlinemode", onlinemode);
                 editor.putInt("tippCount", 1);
                 editor.putBoolean("maradjon", true);
                 editor.apply();
@@ -331,22 +350,39 @@ public class LoginActivity extends AppCompatActivity {
             mainIntent.putExtra("intentvevonev", vevonev);
             mainIntent.putExtra("intentaroszt", aroszt);
             mainIntent.putExtra("intentvevokod", globalVevokod);
+            mainIntent.putExtra("itentonlinemode", onlinemode);
             setResult(CommonStatusCodes.SUCCESS, mainIntent);
             startActivity(mainIntent);
             finish();
         } else {
-            Toast toast= Toast.makeText(getApplicationContext(),"Hibás vevőkód, vagy jelszó!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.BOTTOM,0,20); toast.show();
+            Snackbar.make(findViewById(R.id.logincoordinatorLayout), "Hibás vevőkód, vagy jelszó!",
+                    Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
 
     //*** OPTIONS MENU ***
-    //suriel todo: kijelentkezés, online mode
+    // todo: kijelentkezés, gyors mód,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_login, menu);
+        MenuItem onlinemodeMenu = menu.findItem(R.id.action_online);
+        MenuItem logoutMenu = menu.findItem(R.id.action_settings);
+        logoutMenu.setVisible(true);
+        onlinemodeMenu.setVisible(false);
+
+        //onCreate shared frefs not avaible at menu creation time, so call itt first here...
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        globalVevokod = prefs.getString("vevokod", "");
+        onlinemode = prefs.getBoolean("onlinemode", false);
+
+        if(adminokList.contains(globalVevokod)) {
+            onlinemodeMenu.setVisible(true);
+            onlinemodeMenu.setChecked(onlinemode);
+        }
+
         return true;
     }
 
@@ -363,12 +399,17 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_online) {
-
-
-            return true;
+            if(item.isChecked()){
+                // If item already checked then unchecked it
+                item.setChecked(false);
+                onlinemode = false;
+            }else {
+                // If item is unchecked then checked it
+                item.setChecked(true);
+                onlinemode = true;
+            }
+            // return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 }
